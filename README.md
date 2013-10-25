@@ -1,5 +1,5 @@
 AdSaDi
-======
+------
 
 AdSaDi - Advanced SAP Dialog is a smal ABAP package to make the SAP HTML Viewer (CL_GUI_HTML_VIEWER) 
 ready to use along with dynamically created HTML content an runtime by using XSL transformations.
@@ -10,19 +10,18 @@ All rights reserved. Use is subject to license terms.
 
 
 Install and Update
-==================
+------------------
 
 Please follow the installation process (manually) described in the tutorials for an initial setup. 
 To update to the current version, copy&paste the respective *.abap files using transaction SE80.
 
 
 How to use
-==========
+----------
 
 A simple Hello, World! example with one dialog parameter in two steps:
 
-Create an XSL stylesheet ZADSADI_HELLO_WORLD.XSL
-------------------------------------------------
+**Create an XSL stylesheet ZADSADI_HELLO_WORLD.XSL**
 
         <xsl:transform version="1.0"
           xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -65,8 +64,7 @@ Create an XSL stylesheet ZADSADI_HELLO_WORLD.XSL
         </xsl:template>
         </xsl:transform>
         
-Create an ABAP program
-----------------------
+**Create an ABAP program**
 
         data: dlg type ref to /ukw/adsadi_dialog.
         
