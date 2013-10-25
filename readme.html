@@ -1,0 +1,83 @@
+<!--
+*
+* Copyright (c) 2011 Servicecenter for Medical Informatics,
+* Wuerzburg University Hospital, Germany. All rights reserved.
+* Use is subject to license terms.
+*
+* Author: Frithjof Eckhardt
+*
+-->
+<html>
+<head>
+  <style type="text/css">
+    body {
+      margin:3em;
+    }
+    pre { font-family: monospace; color: #ffffff; background-color: #262626; padding-top:10px;}
+    .lnr { color: #7f7f7f; }
+    .Identifier { color: #fa8072; }
+    .String { color: #87ceeb; }
+    .Type { color: #6495ed; font-weight: bold; }
+    .Statement { color: #6495ed; font-weight: bold; }
+    .Comment { color: #666666; }
+    .Special { color: #bdb76b; }
+    .Function { color: #ffdead; }
+    #footer {
+      margin-top:2em;
+      color:#777;
+    }
+  </style>
+</head>
+<body>
+  <h1>AdSaDi - Advanced SAP Dialog based on CL_GUI_HTML_VIEWER</h1>
+  <div>
+    AdSaDi - Advanced SAP Dialog is a smal ABAP package to make the SAP 
+    HTML Viewer (CL_GUI_HTML_VIEWER) ready to use along with dynamically 
+    created HTML content an runtime by using XSL transformations.
+  </div>
+
+  <div>
+    Here is a simple "Hello, World!" dialog:
+  </div>
+
+    <h2>1. Create an XSL stylesheet ZADSADI_HELLO_WORLD.XSL</h2>
+    <pre>
+    <span class="lnr"> 1 </span><span class="Function">&lt;</span><span class="Special">xsl</span><span class="Comment">:</span><span class="Statement">transform</span><span class="Function"> </span><span class="Type">version</span>=<span class="String">&quot;1.0&quot;</span>
+    <span class="lnr"> 2 </span><span class="Function">  </span><span class="Type">xmlns</span><span class="Comment">:</span><span class="Type">xsl</span>=<span class="String">&quot;<a href="http://www.w3.org/1999/XSL/Transform">http://www.w3.org/1999/XSL/Transform</a>&quot;</span>
+    <span class="lnr"> 3 </span><span class="Function">  </span><span class="Type">xmlns</span><span class="Comment">:</span><span class="Type">sap</span>=<span class="String">&quot;<a href="http://www.sap.com/sapxsl">http://www.sap.com/sapxsl</a>&quot;</span>
+    <span class="lnr"> 4 </span><span class="Function">&gt;</span>
+    <span class="lnr"> 5 </span><span class="Function">&lt;</span><span class="Special">xsl</span><span class="Comment">:</span><span class="Statement">template</span><span class="Function"> </span><span class="Type">match</span>=<span class="String">&quot;/&quot;</span><span class="Function">&gt;</span>
+    <span class="lnr"> 6 </span><span class="Function">&lt;</span><span class="Function">html</span><span class="Function">&gt;</span>
+    <span class="lnr"> 7 </span>  <span class="Function">&lt;</span><span class="Function">body</span><span class="Function">&gt;</span>
+    <span class="lnr"> 8 </span>    <span class="Function">&lt;</span><span class="Function">div</span><span class="Function">&gt;</span>Hello, <span class="Function">&lt;</span><span class="Function">b</span><span class="Function">&gt;</span>World<span class="Identifier">&lt;/b&gt;</span>!<span class="Identifier">&lt;/div&gt;</span>
+    <span class="lnr"> 9 </span>  <span class="Identifier">&lt;/body&gt;</span>
+    <span class="lnr">10 </span><span class="Identifier">&lt;/html&gt;</span>
+    <span class="lnr">11 </span><span class="Identifier">&lt;/</span><span class="Special">xsl</span><span class="Comment">:</span><span class="Statement">template</span><span class="Identifier">&gt;</span>
+    <span class="lnr">12 </span>
+    <span class="lnr">13 </span><span class="Identifier">&lt;/</span><span class="Special">xsl</span><span class="Comment">:</span><span class="Statement">transform</span><span class="Identifier">&gt;</span>
+    </pre>
+
+    <h2>2. Create a program</h2>
+    </pre>
+    <pre>
+    <span class="lnr"> 1 </span><span class="Statement">data</span><span class="Operator">:</span> dlg <span class="Statement">type</span> <span class="Statement">ref to</span> /ukw/adsadi_dialog<span class="Operator">.</span>
+    <span class="lnr"> 2 </span>
+    <span class="lnr"> 3 </span><span class="Statement">create</span> <span class="Statement">object</span> dlg
+    <span class="lnr"> 4 </span>  <span class="Statement">exporting</span>
+    <span class="lnr"> 5 </span>    i_xslt <span class="Operator">=</span> <span class="String">'ZADSADI_HELLO_WORLD.XSL'</span><span class="Operator">.</span>
+    <span class="lnr"> 6 </span>
+    <span class="lnr"> 7 </span><span class="Statement">if</span> dlg<span class="Operator">-&gt;</span>render<span class="Operator">(</span> <span class="Operator">)</span> <span class="Operator">ne</span> /ukw/adsadi_dialog<span class="Operator">=&gt;</span>dlg_cancel<span class="Operator">.</span>
+    <span class="lnr"> 8 </span>  <span class="Statement">write</span><span class="Operator">:</span> <span class="Operator">/</span> `success...`<span class="Operator">.</span>
+    <span class="lnr"> 9 </span><span class="Statement">else</span><span class="Operator">.</span>
+    <span class="lnr">10 </span>  <span class="Statement">write</span><span class="Operator">:</span> <span class="Operator">/</span> `cancel...`<span class="Operator">.</span>
+    <span class="lnr">11 </span><span class="Statement">endif</span><span class="Operator">.</span>
+    </pre>
+
+    <div id="footer">
+      Copyright (c) 2011-2013 Servicecenter for Medical Informatics,
+      Wuerzburg University Hospital, Germany. All rights reserved.
+      Use is subject to license terms.
+      Author: Frithjof Eckhardt
+    </div>
+</body>
+</html>
