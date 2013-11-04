@@ -33,7 +33,6 @@ Demo 1 - Hello World!
         
         </xsl:transform>
 
-**Demo 1**
 ![Hello World Example](https://raw.github.com/RubyNunatak/adsadi/master/img/adsadi_40.png)
 
 Demo 2 - Hello World with input field
@@ -121,7 +120,6 @@ Demo 2 - Hello World with input field
         
         </xsl:transform>
 
-**Demo 2**
 ![Demo 2](https://raw.github.com/RubyNunatak/adsadi/master/img/adsadi_45.png)
 
 
@@ -265,5 +263,4 @@ Demo 3 - Text input of any length
         
         </xsl:transform>
 
-**Demo 3**
 ![Demo 3](https://raw.github.com/RubyNunatak/adsadi/master/img/adsadi_03.png)
