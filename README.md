@@ -8,6 +8,8 @@ Copyright (c) 2011-2013 Servicecenter for Medical Informatics (http://www.smi.uk
 Wuerzburg University Hospital, Germany
 All rights reserved. Use is subject to license terms.
 
+**Example with jQuery and jqPlot**
+![Example with jQuery and jqPlot](https://raw.github.com/RubyNunatak/adsadi/master/img/adsadi_jqplot.png)
 
 Install and Update
 ------------------
@@ -80,3 +82,5 @@ A simple Hello, World! example with one dialog parameter in two steps:
         else.
           write: / `cancel...`.
         endif.
+
+![Hello World Example](https://raw.github.com/RubyNunatak/adsadi/master/img/adsadi_40.png)
