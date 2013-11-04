@@ -83,4 +83,4 @@ A simple Hello, World! example with one dialog parameter in two steps:
           write: / `cancel...`.
         endif.
 
-![Hello World Example](https://raw.github.com/RubyNunatak/adsadi/master/img/adsadi_40.png)
+![Hello World Example](https://raw.github.com/RubyNunatak/adsadi/master/img/adsadi_45.png)
