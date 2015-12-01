@@ -1,8 +1,8 @@
 *
-* Copyright (c) 2013 Servicecenter for Medical Informatics,
+* Copyright (c) 2013-2015 Servicecenter for Medical Informatics,
 * Wuerzburg University Hospital, Germany. All rights reserved.
 * Use is subject to license terms.
-* http://www.smi.uk-wuerzburg.de
+* http://www.ukw.de
 *
 *
 * Copyright (c) 2011-2012 Servicecenter for Medical Informatics,
@@ -36,6 +36,8 @@ public section.
     for /UKW/IF_ADSADI_CALLBACK~DLG_NO_CANCEL .
   aliases ACTION_LOOKUP
     for /UKW/IF_ADSADI_CALLBACK~ACTION_LOOKUP .
+  aliases ADSADI_TITLE
+    for /UKW/IF_ADSADI_CALLBACK~TITLE .
   aliases CLOSE
     for /UKW/IF_ADSADI_CALLBACK~CLOSE .
   aliases EXECUTE_ACTION
@@ -85,7 +87,8 @@ public section.
       value(I_TOP_LEFT_X) type I default 40
       value(I_WIDTH) type I default 100
       value(I_HEIGHT) type I default 25
-      value(I_TITLE) type STRING default '' .
+      value(I_TITLE) type STRING default ''
+      value(I_JQUERY_VERSION) type /UKW/JQUERY_VERSION optional .
   methods GET_VALUE
     importing
       value(N) type CSEQUENCE
@@ -94,6 +97,12 @@ public section.
   methods RENDER
     returning
       value(CANCELED) type I .
+  class-methods GET_SAPGUI_BGCOLOR
+    returning
+      value(E_COLOR) type N2_CHAR10 .
+  class-methods GET_SAPGUI_FGCOLOR
+    returning
+      value(E_COLOR) type N2_CHAR10 .
 
 protected section.
 
@@ -399,20 +408,38 @@ endmethod.
 * http://goo.gl/dTqqQM
 *
     if canceled is not initial.
-      me->m_canceled = canceled.
+      r = me->m_canceled = canceled.
     else.
-      r = m_canceled.
+      r = me->m_canceled.
     endif.
   endmethod.                    "canceled
 
-  method CONSTRUCTOR.
+  method constructor.
 *
 * Copyright (c) 2011-2013 Servicecenter for Medical Informatics,
 * Wuerzburg University Hospital, Germany. All rights reserved.
 * Use is subject to license terms.
 * http://goo.gl/dTqqQM
 *
+    data: param type line of abap_trans_parmbind_tab.
     me->m_xslt_params  = i_params.
+    delete  me->m_xslt_params where name eq 'SAP_BACKGROUNDCOLOR'.
+    param-name = 'SAP_BACKGROUNDCOLOR'.
+    param-value = /ukw/adsadi_dialog=>get_sapgui_bgcolor( ).
+    append param to  me->m_xslt_params.
+
+    delete  me->m_xslt_params where name eq 'SAP_FOREGROUNDCOLOR'.
+    param-name = 'SAP_FOREGROUNDCOLOR'.
+    param-value = /ukw/adsadi_dialog=>get_sapgui_fgcolor( ).
+    append param to  me->m_xslt_params.
+
+    if i_jquery_version is not initial.
+      delete me->m_xslt_params where name eq 'THEME'.
+      param-name = 'THEME'.
+      param-value = /ukw/jquery_theme_helper=>theme_4_user( i_jquery_version = i_jquery_version ).
+      append param to me->m_xslt_params.
+    endif.
+
     me->xslt         = i_xslt.
     me->size         = i_size.
     me->top_left_y   = i_top_left_y.
@@ -493,6 +520,68 @@ endmethod.
       me->close( ).
     endif.
   endmethod.                    "display_result
+
+method GET_SAPGUI_BGCOLOR .
+  " Aus Defaultcode übernommen
+  DATA: BEGIN OF ls_buf,
+          h1 TYPE c LENGTH 2,
+          h2 TYPE c LENGTH 2,
+          h3 TYPE c LENGTH 2,
+        END OF ls_buf.
+
+  DATA l_hex TYPE x LENGTH 3.
+  DATA l_buf TYPE c LENGTH 10.
+  DATA color TYPE i.
+
+* get Font/Color-Infos from GUI
+  CALL METHOD cl_gui_resources=>get_background_color
+    EXPORTING
+      id                     = cl_gui_resources=>col_background_level1 "col_background_level2
+      state                  = 0
+    IMPORTING
+      color                  = color
+    EXCEPTIONS
+      get_std_resource_error = 1
+      OTHERS                 = 2.
+  IF sy-subrc = 0.
+    ls_buf = l_buf = l_hex = color.
+    e_color = ls_buf-h3.
+    CONCATENATE e_color ls_buf-h2 INTO e_color.
+    CONCATENATE e_color ls_buf-h1 INTO e_color.
+    CONCATENATE '#' e_color INTO e_color.
+  ENDIF.
+endmethod.
+
+method GET_SAPGUI_FGCOLOR .
+  " Aus Defaultcode übernommen
+  DATA: BEGIN OF ls_buf,
+          h1 TYPE c LENGTH 2,
+          h2 TYPE c LENGTH 2,
+          h3 TYPE c LENGTH 2,
+        END OF ls_buf.
+
+  DATA l_hex TYPE x LENGTH 3.
+  DATA l_buf TYPE c LENGTH 10.
+  DATA color TYPE i.
+
+* get Font/Color-Infos from GUI
+  CALL METHOD cl_gui_resources=>get_background_color
+    EXPORTING
+      id                     = cl_gui_resources=>col_background_level2
+      state                  = 0
+    IMPORTING
+      color                  = color
+    EXCEPTIONS
+      get_std_resource_error = 1
+      OTHERS                 = 2.
+  IF sy-subrc = 0.
+    ls_buf = l_buf = l_hex = color.
+    e_color = ls_buf-h3.
+    CONCATENATE e_color ls_buf-h2 INTO e_color.
+    CONCATENATE e_color ls_buf-h1 INTO e_color.
+    CONCATENATE '#' e_color INTO e_color.
+  ENDIF.
+endmethod.
 
   method GET_VALUE.
 *

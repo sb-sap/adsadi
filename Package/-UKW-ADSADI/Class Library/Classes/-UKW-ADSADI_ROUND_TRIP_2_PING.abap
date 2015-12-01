@@ -1,8 +1,8 @@
 *
-* Copyright (c) 2013 Servicecenter for Medical Informatics,
+* Copyright (c) 2013-2015 Servicecenter for Medical Informatics,
 * Wuerzburg University Hospital, Germany. All rights reserved.
 * Use is subject to license terms.
-* http://www.smi.uk-wuerzburg.de
+* http://www.ukw.de
 *
 class /UKW/ADSADI_ROUND_TRIP_2_PING definition
   public

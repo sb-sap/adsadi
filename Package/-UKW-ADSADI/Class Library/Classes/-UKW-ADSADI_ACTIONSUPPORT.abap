@@ -1,8 +1,8 @@
 *
-* Copyright (c) 2013 Servicecenter for Medical Informatics,
+* Copyright (c) 2013-2015 Servicecenter for Medical Informatics,
 * Wuerzburg University Hospital, Germany. All rights reserved.
 * Use is subject to license terms.
-* http://www.smi.uk-wuerzburg.de
+* http://www.ukw.de
 *
 class /UKW/ADSADI_ACTIONSUPPORT definition
   public
@@ -113,91 +113,99 @@ method /ukw/if_adsadi_action~execute_action.
 * Use is subject to license terms.
 * http://goo.gl/dTqqQM
 *
+  me->update_params( ).
+
   result = /ukw/if_adsadi_action=>success.
 endmethod.
 
-method /UKW/IF_ADSADI_ACTION~EXECUTE_RESULT.
+method /ukw/if_adsadi_action~execute_result.
 *
 * Copyright (c) 2011-2013 Servicecenter for Medical Informatics,
 * Wuerzburg University Hospital, Germany. All rights reserved.
 * Use is subject to license terms.
 * http://goo.gl/dTqqQM
 *
-    data: ex type ref to  cx_xslt_runtime_error.
-    data: ex2 type ref to cx_transformation_error.
+  data: ex type ref to  cx_xslt_runtime_error.
+  data: ex2 type ref to cx_transformation_error.
 
-    data: param type abap_trans_parmbind.
+  data: param type abap_trans_parmbind.
 
-    data: begin of bgr,
-          h1 type c length 2,
-          h2 type c length 2,
-          h3 type c length 2,
-        end of bgr.
+  data: begin of bgr,
+        h1 type c length 2,
+        h2 type c length 2,
+        h3 type c length 2,
+      end of bgr.
 
-    data: hex type x length 3.
-    data: buf type c length 10.
-    data: color type i.
+  data: hex type x length 3.
+  data: buf type c length 10.
+  data: color type i.
 
 *   Background-Color1
-    delete me->m_xslt_params where name eq 'SAP_BACKGROUNDCOLOR1'.
-    param-name = 'SAP_BACKGROUNDCOLOR1'.
-    param-value = '#FFFFFF'.
+  delete me->m_xslt_params where name eq 'SAP_BACKGROUNDCOLOR1'.
+  param-name = 'SAP_BACKGROUNDCOLOR1'.
+  param-value = '#FFFFFF'.
 
-    " Overwrite default with system value
-    call method cl_gui_resources=>get_background_color
-      exporting
-        id     = cl_gui_resources=>col_background_level1
-        state  = 0
-      importing
-        color  = color
-      exceptions
-        others = 1.
-    if sy-subrc = 0.
-      bgr = buf = hex = color.
-      concatenate `#` bgr-h3 bgr-h2 bgr-h1 into param-value.
-    endif.
-    append param to me->m_xslt_params.
+  " Overwrite default with system value
+  call method cl_gui_resources=>get_background_color
+    exporting
+      id     = cl_gui_resources=>col_background_level1
+      state  = 0
+    importing
+      color  = color
+    exceptions
+      others = 1.
+  if sy-subrc = 0.
+    bgr = buf = hex = color.
+    concatenate `#` bgr-h3 bgr-h2 bgr-h1 into param-value.
+  endif.
+  append param to me->m_xslt_params.
 
 *   Background-Color2
-    delete me->m_xslt_params where name eq 'SAP_BACKGROUNDCOLOR2'.
-    param-name = 'SAP_BACKGROUNDCOLOR2'.
-    param-value = '#CCCCCC'.
+  delete me->m_xslt_params where name eq 'SAP_BACKGROUNDCOLOR2'.
+  param-name = 'SAP_BACKGROUNDCOLOR2'.
+  param-value = '#CCCCCC'.
 
-    " Overwrite default with system value
-    call method cl_gui_resources=>get_background_color
-      exporting
-        id     = cl_gui_resources=>col_background_level2
-        state  = 0
-      importing
-        color  = color
-      exceptions
-        others = 1.
-    if sy-subrc = 0.
-      bgr = buf = hex = color.
-      concatenate `#` bgr-h3 bgr-h2 bgr-h1 into param-value.
-    endif.
-    append param to me->m_xslt_params.
+  " Overwrite default with system value
+  call method cl_gui_resources=>get_background_color
+    exporting
+      id     = cl_gui_resources=>col_background_level2
+      state  = 0
+    importing
+      color  = color
+    exceptions
+      others = 1.
+  if sy-subrc = 0.
+    bgr = buf = hex = color.
+    concatenate `#` bgr-h3 bgr-h2 bgr-h1 into param-value.
+  endif.
+  append param to me->m_xslt_params.
 
-    data: result_view type string.
-    result_view = me->result_view_lookup( result ).
+*   Title
+  delete me->m_xslt_params where name eq 'ADSADI_TITLE'.
+  param-name = 'ADSADI_TITLE'.
+  param-value = me->m_owner->adsadi_title( ). " Alias!
+  append param to me->m_xslt_params.
 
-    if result_view is not initial.
-      try.
-          if me->m_xml_doc is bound.
-            call transformation (result_view)
-                     parameters (me->m_xslt_params)
-                     source xml me->m_xml_doc
-                     result xml r.
-          else.
-            call transformation (result_view)
-                     parameters (me->m_xslt_params)
-                     source xml me->m_xml
-                     result xml r.
-          endif.
-        catch: cx_xslt_runtime_error into ex.
-        catch: cx_invalid_transformation into ex2.
-      endtry.
-    endif.
+  data: result_view type string.
+  result_view = me->result_view_lookup( result ).
+
+  if result_view is not initial.
+    try.
+        if me->m_xml_doc is bound.
+          call transformation (result_view)
+                   parameters (me->m_xslt_params)
+                   source xml me->m_xml_doc
+                   result xml r.
+        else.
+          call transformation (result_view)
+                   parameters (me->m_xslt_params)
+                   source xml me->m_xml
+                   result xml r.
+        endif.
+      catch: cx_xslt_runtime_error into ex.
+      catch: cx_invalid_transformation into ex2.
+    endtry.
+  endif.
 endmethod.
 
 method /ukw/if_adsadi_action~get_owner.

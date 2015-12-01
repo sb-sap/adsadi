@@ -1,8 +1,8 @@
 *
-* Copyright (c) 2013 Servicecenter for Medical Informatics,
+* Copyright (c) 2013-2015 Servicecenter for Medical Informatics,
 * Wuerzburg University Hospital, Germany. All rights reserved.
 * Use is subject to license terms.
-* http://www.smi.uk-wuerzburg.de
+* http://www.ukw.de
 *
 class /UKW/ADSADI_ACTION_THEME definition
   public
@@ -11,10 +11,17 @@ class /UKW/ADSADI_ACTION_THEME definition
 
 public section.
 
+  methods CONSTRUCTOR
+    importing
+      value(NAME) type STRING optional
+      value(JQUERY_VERSION) type /UKW/JQUERY_VERSION optional .
+
   methods /UKW/IF_ADSADI_ACTION~EXECUTE_ACTION
     redefinition .
 
 protected section.
+
+  data JQUERY_VERSION type /UKW/JQUERY_VERSION .
 
 private section.
 endclass. "/UKW/ADSADI_ACTION_THEME definition
@@ -35,8 +42,16 @@ method /ukw/if_adsadi_action~execute_action.
   theme = me->get_value( 'theme' ).
 
   " Theme speichern im Userparamter
-  /ukw/jquery_theme_helper=>theme_4_user( theme ).
+  /ukw/jquery_theme_helper=>theme_4_user(
+    i_theme = theme
+    i_jquery_version = me->jquery_version
+  ).
 
   me->update_params( ).
+endmethod.
+
+method constructor.
+  super->constructor( name = name ).
+  me->jquery_version = jquery_version.
 endmethod.
 endclass. "/UKW/ADSADI_ACTION_THEME implementation
