@@ -1,5 +1,5 @@
 *
-* Copyright (c) 2013-2015 Servicecenter for Medical Informatics,
+* Copyright (c) 2013-2016 Servicecenter for Medical Informatics,
 * Wuerzburg University Hospital, Germany. All rights reserved.
 * Use is subject to license terms.
 * http://www.ukw.de

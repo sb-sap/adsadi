@@ -1,5 +1,5 @@
 *
-* Copyright (c) 2013-2015 Servicecenter for Medical Informatics,
+* Copyright (c) 2013-2016 Servicecenter for Medical Informatics,
 * Wuerzburg University Hospital, Germany. All rights reserved.
 * Use is subject to license terms.
 * http://www.ukw.de
@@ -47,6 +47,17 @@ public section.
   aliases LAST_COMMAND
     for /UKW/IF_ADSADI_CALLBACK~LAST_COMMAND .
 
+  class-methods CREATE_FULL_SCREEN
+    importing
+      value(I_XSLT) type CSEQUENCE optional
+      value(I_XML_DOC) type ref to IF_IXML_NODE optional
+    returning
+      value(R) type ref to /UKW/ADSADI_DIALOG .
+  class-methods CREATE_WITH_URL
+    importing
+      value(I_URL) type CSEQUENCE
+    returning
+      value(R) type ref to /UKW/ADSADI_DIALOG .
   methods ON_SAPEVENT
     for event SAPEVENT of CL_GUI_HTML_VIEWER
     importing
@@ -88,7 +99,8 @@ public section.
       value(I_WIDTH) type I default 100
       value(I_HEIGHT) type I default 25
       value(I_TITLE) type STRING default ''
-      value(I_JQUERY_VERSION) type /UKW/JQUERY_VERSION optional .
+      value(I_JQUERY_VERSION) type /UKW/JQUERY_VERSION optional
+      value(I_URL) type CSEQUENCE optional .
   methods GET_VALUE
     importing
       value(N) type CSEQUENCE
@@ -126,6 +138,7 @@ protected section.
     action_registry type hashed table of action_registry_type with unique key name .
   data M_CANCELED type I .
   data M_XSLT_PARAMS type ABAP_TRANS_PARMBIND_TAB .
+  data URL type TEXT255 .
 
 private section.
 
@@ -217,12 +230,16 @@ method /ukw/if_adsadi_callback~display.
     data: post_action type ref to /ukw/adsadi_actionsupport.
     post_action = me->action_lookup( 'ACTION_POST' ).
 
+    data: called_with_content type abap_bool.
+
     if post_action is bound.
       html_tab = post_action->execute_result( /ukw/if_adsadi_action=>input ).
 
       me->xslt_params( post_action->xslt_params( ) ).
 
       if html_tab is not initial.
+
+        called_with_content = abap_true.
 
         call method me->html_viewer->load_data
           exporting
@@ -238,11 +255,13 @@ method /ukw/if_adsadi_callback~display.
             others       = 1.
 
         if sy-subrc eq 0.
-          call method me->html_viewer->show_url
-            exporting
-              url = doc_url.
+          me->html_viewer->show_url( url = doc_url ).
         endif.
       endif.
+    endif.
+
+    if called_with_content eq abap_false and me->url is not initial.
+      me->html_viewer->show_url( url = me->url ).
     endif.
   else.
     if me->last_command( ) eq 'SAVE'.
@@ -447,6 +466,7 @@ endmethod.
     me->width        = i_width.
     me->height       = i_height.
     me->title        = i_title.
+    me->url        = i_url.
     if i_xml is not initial.
       me->xml = i_xml.
     elseif i_xml_doc is bound.
@@ -478,6 +498,58 @@ endmethod.
       action = post_action
     ).
   endmethod.                    "CONSTRUCTOR
+
+  method create_full_screen.
+    data: jq_version type /ukw/jquery_version value '1.11.0'.
+
+    " Parameters
+    data: params type abap_trans_parmbind_tab.
+    data: param type abap_trans_parmbind.
+
+    param-name = 'THEME'.
+    param-value = /ukw/jquery_theme_helper=>theme_4_user( i_jquery_version = jq_version ).
+    append param to params.
+
+    " Theme Action
+    data: theme_action type ref to /ukw/adsadi_action_theme.
+    create object theme_action
+      exporting
+        name           = 'theme'
+        jquery_version = jq_version.
+
+    theme_action->add_result_config(
+      result = /ukw/if_adsadi_action=>success
+      view   = i_xslt
+    ).
+
+    theme_action->xml_doc( i_xml_doc ).
+
+    " Dialog
+    create object r
+      exporting
+        i_size    = 'FULL'
+        i_xslt    = i_xslt
+        i_xml_doc = i_xml_doc
+        i_params  = params.
+
+    r->register_action(
+      name = 'theme'
+      action = theme_action
+    ).
+  endmethod.
+
+  method create_with_url.
+*
+* Copyright (c) 2011-2015 Servicecenter for Medical Informatics,
+* Wuerzburg University Hospital, Germany. All rights reserved.
+* Use is subject to license terms.
+* http://goo.gl/dTqqQM
+*
+    create object r
+      exporting
+        i_url = i_url
+        i_size = 'FULL'.
+  endmethod.
 
   method DISPLAY_RESULT.
 *
